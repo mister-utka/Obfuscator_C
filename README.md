@@ -4,7 +4,9 @@
 path_project = "path/you/project"
 ```
 Отредактируейте переменные, которые вы хотите исключить из преобразования:
+```python
 special_cases_searching_variables = ["your", "vars"]
+```
 
 # Запуск
 ```bash
