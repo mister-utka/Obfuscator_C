@@ -166,7 +166,7 @@ def main():
         vars_file = obfuscator.searching_variables(file)
         if vars_file:
             variables += vars_file
-    # # сортируем массив
+    # сортируем массив
     variables = sorted(variables)
     # удаляем повторения
     variables = list(dict.fromkeys(variables))
@@ -185,6 +185,7 @@ def main():
     # modified_names = dict(modified_names)
     print(modified_names)
 
+    # заменяем имена переменных и функция на новые
     for file in all_files:
         print(f"\n------------------{file}----------------------\n")
         obfuscator.substitution_variables(file, modified_names)
