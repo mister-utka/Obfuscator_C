@@ -6,7 +6,7 @@ import string
 from pprint import pprint
 
 # путь до проекта
-path_project = "path/you/project"
+path_project = "your/path/project"
 # директории, которые нужно игнорировать
 dirs_ignore = [".git"]
 
@@ -84,12 +84,14 @@ class Obfuscator():
                         # int* test;
                         # int* test();
                         rf"\s{d}\*\s(\w*)",
+                        rf"\s{d}\s\*(\w*)",
                         # для функций типа
                         # int test()
                         rf"{d}\s(\w*)",
                         # для функций типа
                         # int* test()
-                        rf"{d}\*\s(\w*)"
+                        rf"{d}\*\s(\w*)",
+                        rf"{d}\s\*(\w*)"
                     ]
 
                     for re_pattern in re_patterns:
