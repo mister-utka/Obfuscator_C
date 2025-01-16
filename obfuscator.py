@@ -6,7 +6,7 @@ import string
 from pprint import pprint
 
 # путь до проекта
-path_project = "../../../C/Harvester_Copy/client/"
+path_project = "path/you/project"
 # директории, которые нужно игнорировать
 dirs_ignore = [".git"]
 
