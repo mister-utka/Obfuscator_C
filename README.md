@@ -79,7 +79,6 @@ python3 obfuscator.py
 ====================================================================================================
 [*] STAGE 1: Getting all the project files
 test/test.c
-test/test
 [+] STAGE 1: Is completed
 Do you want to continue? (yes/no): yes
 ====================================================================================================
@@ -120,8 +119,6 @@ Do you want to continue? (yes/no): yes
 [*] STAGE 5: Name substitution 
 replacement statrt: test/test.c
 replacement end:    test/test.c
-replacement statrt: test/test
-replacement end:    test/test
 [+] STAGE 5: Is completed
 ```
 
