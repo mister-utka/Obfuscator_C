@@ -5,9 +5,12 @@ import string
 
 from pprint import pprint
 
-path_project = "../Harvester_Copy/client/"
+# путь до проекта
+path_project = "../../../C/Harvester_Copy/client/"
+# директории, которые нужно игнорировать
 dirs_ignore = [".git"]
 
+# определяем список для поиска переменных и функций, данные значения будут использоваться в регулярных выражениях
 data_types_c = ["char", "unsigned char", "signed char",
                 "char*", "unsigned char*", "signed char*",
                 "short", "short int", "signed short", "signed short int", "unsigned short", "unsigned short int",
@@ -24,9 +27,15 @@ data_types_c = ["char", "unsigned char", "signed char",
                 "size_t", "size_t*"
                 ]
 
-special_cases = ["main", "i", "typedef","unsigned",
-                 "ifdef", "elif", "defined", "ifndef",
-                 "define", ]
+# если в переменную попадут данные значения, они будут игнорироваться
+special_cases_searching_variables = ["main", "typedef", "ifdef", "elif", "defined", "ifndef", "define",
+                                     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                                     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                                     "str"]
+
+# если строка, которая попала под замену будет содержать одну из этих переменных, она будет игнорироваться
+special_cases_substitution_variables = ["include", "ifdef", "defined", "define"]
+
 
 class Obfuscator():
 
@@ -90,19 +99,15 @@ class Obfuscator():
                         rf"{d}\*\s(\w*)"
                     ]
 
-                    for re_search in re_patterns:
-                        var = re.search(re_search, line)
-                        if var:
-                            #print(re_search)
-                            #print(f"line: {line.strip()}")
-                            #print(var.group(1))
-                            if all(case != var.group(1) for case in special_cases):
-                                if all(case != var.group(1) for case in data_types_c):
-                                    variables.append(var.group(1))
-                            #print()
-
-
-        
+                    for re_pattern in re_patterns:
+                        vars = re.findall(re_pattern, line)
+                        if vars:
+                            for var in vars:
+                                # игнорируем все переменные, которые совпали с переменными из special_cases_searching_variables
+                                if all(case != var for case in special_cases_searching_variables):
+                                    # если переменная не является типом данных
+                                    if all(case != var for case in data_types_c):
+                                        variables.append(var)
         # если попадается бинарный файл
         except UnicodeDecodeError:
             pass
@@ -120,26 +125,24 @@ class Obfuscator():
         for name in list:
             dict[name] = self.generating_random_string()
     
-    def replace_nth(match):
-        # Получаем исходную строку
-        original_string = match.group(0)
-        
-        # Заменяем второе вхождение символа на новое значение
-        return original_string.replace(match.group(1), 'aaaaa', 1)
 
+    # замена всех найденных переменных
     def substitution_variables(self, path, dict):
         try:
             with open(path, 'r') as file:
                 content = file.readlines()
             
-            for line in content:
-                for key, data in dict.items():
-                    if key in line:
-                        # print(f"key: {key}")
-                        # print(f"line_old: {line.strip()}")
-                        line = line.replace(key, data)
-                        # print(f"line_new: {line.strip()}\n")
-                print(line, end="")
+            with open(path, 'w') as file:
+                for line in content:
+                    for key, data in dict.items():
+                        if key in line:
+                            # print(f"key: {key}")
+                            # print(f"line_old: {line.strip()}")
+                            if all(case not in line for case in special_cases_substitution_variables):
+                                line = line.replace(key, data)
+                            # print(f"line_new: {line.strip()}\n")
+                    file.write(line)
+                    print(line, end="")
                         
         except UnicodeDecodeError:
             pass
@@ -176,9 +179,10 @@ def main():
     modified_names = {}
     obfuscator.name_generation(variables, modified_names)
     # Сортируем ключи по длине
-    modified_names = sorted(modified_names.items(), key=lambda x: len(x[0]), reverse=True)
+    # так как если этого не сделать, то маленькие key могут частично заменить код переменной или функции
+    modified_names = dict(sorted(modified_names.items(), key=lambda x: len(x[0]), reverse=True))
     # Создаем новый словарь из отсортированных элементов
-    modified_names = dict(modified_names)
+    # modified_names = dict(modified_names)
     print(modified_names)
 
     for file in all_files:
